@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050006">
+<title>Gửi em yêu ❤️</title>
+<style>
+  :root { --pink:#ff70d4; --pink2:#ffb0e9; --red:#ff351f; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; width:100%; height:100%; overflow:hidden; background:#030204; color:white; font-family: "Trebuchet MS", system-ui, sans-serif; }
+  #sky { position:fixed; inset:0; overflow:hidden; background:
+    radial-gradient(ellipse at 50% 110%, rgba(255,30,160,.12), transparent 48%),
+    radial-gradient(ellipse at 10% 20%, rgba(110,0,70,.12), transparent 40%), #030204; }
+  .star { position:absolute; border-radius:50%; background:#fff; opacity:0; box-shadow:0 0 8px 2px #ffb9ee; animation:twinkle var(--dur) ease-in-out infinite; }
+  @keyframes twinkle { 0%,100%{opacity:0;transform:scale(.5)} 50%{opacity:.8;transform:scale(1.4)} }
+  .float-text { position:absolute; white-space:nowrap; color:var(--pink); font-weight:500; text-shadow:0 0 5px #ff70d4, 0 0 13px #ff36c9, 0 0 26px #ff1493; animation:drift var(--dur) linear forwards; user-select:none; pointer-events:none; }
+  @keyframes drift { 0%{transform:translate3d(0,0,0) rotate(var(--rot)); opacity:0} 8%{opacity:1} 88%{opacity:.95} 100%{transform:translate3d(var(--dx),-110vh,0) rotate(calc(var(--rot) + 14deg));opacity:0} }
+  .heart { position:absolute; color:var(--red); line-height:1; filter:drop-shadow(0 0 9px #ff351f) drop-shadow(0 0 20px #ff2400); animation:heartfly var(--dur) linear forwards; user-select:none; pointer-events:none; }
+  @keyframes heartfly { 0%{transform:translateY(0) scale(.55) rotate(-12deg);opacity:0} 12%{opacity:1} 75%{opacity:1} 100%{transform:translate(var(--dx),-110vh) scale(1.25) rotate(18deg);opacity:0} }
+  .center { position:fixed; z-index:5; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; pointer-events:none; }
+  .title { margin:0 0 12px; color:#ffb3e9; font-size:clamp(27px,7vw,52px); line-height:1.2; text-shadow:0 0 8px #ff65d4,0 0 24px #ff1493,0 0 44px #ff1493; animation:pulse 2.2s ease-in-out infinite; }
+  .subtitle { max-width:560px; margin:0; color:#ffd4f2; font-size:clamp(15px,4vw,21px); line-height:1.65; text-shadow:0 0 12px #ff4acb; }
+  @keyframes pulse { 0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.035);filter:brightness(1.3)} }
+  .controls { position:fixed; z-index:10; left:0; right:0; bottom:max(22px, env(safe-area-inset-bottom)); display:flex; justify-content:center; padding:0 18px; }
+  button { border:1px solid rgba(255,160,225,.7); border-radius:999px; padding:14px 22px; background:rgba(45,0,34,.82); color:#ffe3f7; font-size:15px; font-weight:700; box-shadow:0 0 18px rgba(255,50,190,.3); backdrop-filter:blur(10px); cursor:pointer; }
+  button:active { transform:scale(.97); }
+  .hint { position:fixed; z-index:6; bottom:88px; left:0; right:0; text-align:center; color:#d9a2ca; font-size:11px; opacity:.75; padding:0 16px; }
+  .hidden { display:none !important; }
+  @media (prefers-reduced-motion: reduce) { .float-text,.heart,.star,.title { animation-duration: .01ms !important; } }
+</style>
+</head>
+<body>
+<div id="sky" aria-hidden="true"></div>
+<div class="center">
+  <h1 class="title">Mai Hương 💗</h1>
+  <p class="subtitle">Chúc em 20/10 vui vẻ 🌷<br>Luôn xinh đẹp, hạnh phúc và được yêu thương thật nhiều.<br><strong>Anh yêu em ❤️</strong></p>
+</div>
+<div class="hint" id="hint">Chạm nút bên dưới để bật nhạc và bắt đầu hiệu ứng ✨</div>
+<div class="controls"><button id="start">Chạm để mở lời yêu thương ❤️</button></div>
+<audio id="music" loop preload="none">
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+<script>
+(() => {
+  const sky = document.getElementById('sky');
+  const start = document.getElementById('start');
+  const music = document.getElementById('music');
+  const hint = document.getElementById('hint');
+  const phrases = [
+    'Mai Hương','Anh Yêu Em','I LOVE YOU',
+    'Chúc em 20/10 vui vẻ','20/10','Em là điều tuyệt vời nhất 💗',
+    'Mong em luôn mỉm cười 🌷','Gửi cô gái anh thương'
+  ];
+  let active = false, timers = [];
+
+  // Tạo các đốm sáng nền
+  for (let i=0; i<85; i++) {
+    const s = document.createElement('i');
+    s.className = 'star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.width = s.style.height = (1+Math.random()*2.2)+'px';
+    s.style.setProperty('--dur',(1.5+Math.random()*4)+'s');
+    s.style.animationDelay = (-Math.random()*5)+'s';
+    sky.appendChild(s);
+  }
+
+  function spawnText() {
+    if (!active) return;
+    const el = document.createElement('div');
+    el.className = 'float-text';
+    el.textContent = phrases[Math.floor(Math.random()*phrases.length)];
+    el.style.left = (Math.random()*88)+'%';
+    el.style.top = (55+Math.random()*50)+'%';
+    el.style.fontSize = (14+Math.random()*20)+'px';
+    el.style.setProperty('--dur',(7+Math.random()*8)+'s');
+    el.style.setProperty('--dx',(-80+Math.random()*160)+'px');
+    el.style.setProperty('--rot',(-12+Math.random()*24)+'deg');
+    sky.appendChild(el);
+    setTimeout(()=>el.remove(),16000);
+    timers.push(setTimeout(spawnText, 180+Math.random()*430));
+  }
+
+  function spawnHeart() {
+    if (!active) return;
+    const el = document.createElement('div');
+    el.className = 'heart';
+    el.textContent = Math.random()>.2 ? '❤' : '♥';
+    el.style.left = (Math.random()*96)+'%';
+    el.style.top = (75+Math.random()*30)+'%';
+    el.style.fontSize = (22+Math.random()*42)+'px';
+    el.style.setProperty('--dur',(5+Math.random()*6)+'s');
+    el.style.setProperty('--dx',(-60+Math.random()*120)+'px');
+    sky.appendChild(el);
+    setTimeout(()=>el.remove(),12000);
+    timers.push(setTimeout(spawnHeart, 250+Math.random()*550));
+  }
+
+  start.addEventListener('click', async () => {
+    if (!active) {
+      active = true;
+      start.textContent = 'Tắt nhạc 🔇';
+      hint.textContent = 'Dành tặng em, với tất cả sự yêu thương 💖';
+      spawnText(); spawnText(); spawnHeart(); spawnHeart();
+      try { await music.play(); } catch(e) {
+        hint.textContent = 'Hiệu ứng đã chạy. Nếu chưa có nhạc, hãy thêm file music.mp3 vào cùng thư mục trang web.';
+      }
+    } else {
+      if (!music.paused) { music.pause(); start.textContent = 'Bật nhạc 🎵'; }
+      else {
+        try { await music.play(); start.textContent = 'Tắt nhạc 🔇'; }
+        catch(e) { hint.textContent = 'Không phát được nhạc. Kiểm tra file music.mp3 nhé.'; }
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
